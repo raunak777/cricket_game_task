@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Game</title>
+</head>
+
+<body>
+    <button id="start">Start Game</button><br>
+    <label id="choose"></label> Choose your Toss
+    <select id="toss">
+        <option value="">Select Toss</option>
+        <option value="0">Head</option>
+        <option value="1">Tail</option>
+    </select>
+    <button id="dice">Dice</button><br><br>
+    <label id="option"></label> Choose option
+    <select id="opt">
+        <option value="">Select OPT</option>
+        <option value="0">Batting</option>
+        <option value="1">Fielding</option>
+    </select>
+    <button id="chooseopt">Choose</button>
+    <script>
+        var teams = ["Team1", "Team2"];
+        var tosswinner = "";
+        var battingTeam = "";
+        var fieldingTeam = "";
+        var battingRunner = 0;
+        var fieldingRunner = 0;
+        var arrBat = [];
+        var arrField = [];
+        var start = document.querySelector("#start");
+        var team_name = document.querySelector("#choose");
+        var toss_selected = document.querySelector("#toss");
+        var dice = document.querySelector("#dice");
+        var option = document.querySelector("#option");
+        var opt = document.querySelector("#opt");
+        var chooseopt = document.querySelector("#chooseopt");
+        function startGame() {
+            let random = Math.floor(Math.random() * 2);
+            team_name.innerHTML = teams[random];
+        }
+        function toss_change() {
+            let teamname = team_name.innerHTML;
+            let tossSelectedVal = toss_selected.value;
+            let random = Math.floor(Math.random() * 2);
+            if (tossSelectedVal != "") {
+                if (tossSelectedVal == random) {
+                    tosswinner = teamname;
+                    option.innerHTML = tosswinner;
+                    console.log(`Toss win ${teamname}`);
+                }
+                else {
+                    for (let i = 0; i < teams.length; i++) {
+                        if (teams[i] != teamname) {
+                            tosswinner = teams[i];
+                            option.innerHTML = tosswinner;
+                            console.log(`Toss win ${teams[i]}`);
+                        }
+                    }
+                }
+            }
+            else {
+                console.log("Select Toss");
+            }
+        }
+        function tossWinner() {
+            let toss_winner = tosswinner;
+            let opt_val = opt.value;
+            if (opt_val == 0) {
+                battingRun();
+                console.log(`${toss_winner} on batting`);
+                for (let i = 0; i < teams.length; i++) {
+                    if (teams[i] != toss_winner) {
+
+                        console.log(`${teams[i]} on fielding`);
+                        fieldingTeam = teams[i];
+                    }
+                }
+                battingTeam = toss_winner;
+            }
+            else {
+                battingRun();
+                console.log(`${toss_winner} on fielding`);
+                for (let i = 0; i < teams.length; i++) {
+                    if (teams[i] != toss_winner) {
+                        console.log(`${teams[i]} on batting`);
+                        battingTeam = teams[i];
+                    }
+                }
+                fieldingTeam = toss_winner;
+
+            }
+        }
+        function battingRun() {
+            let current_batting = battingTeam;
+            var interval = setInterval(() => {
+                let run = Math.floor(Math.random() * 7);
+                console.log(run);
+                arrBat.push(run);
+                for (let i = 0; i < arrBat.length; i++) {
+                    if (arrBat[i - 1] === 6 && arrBat[i] === 6) {
+                        clearInterval(interval);
+                        calBattingRun();
+                        fieldingRun();
+                    }
+                }
+            }, 1000);
+        }
+        function calBattingRun() {
+            let current_batting = battingTeam;
+            for (let i = 0; i < arrBat.length; i++) {
+                battingRunner += arrBat[i];
+
+            }
+            console.log("Batting "+current_batting+" Total Score " + battingRunner);
+            console.log("Now Fielding team Batting start");
+        }
+
+        function fieldingRun() {
+            let current_fielding = fieldingTeam;
+            var interval = setInterval(() => {
+                let run = Math.floor(Math.random() * 7);
+                console.log(run);
+                fieldingRunner += run;
+                if (fieldingRunner < battingRunner) {
+                    arrField.push(run);
+                    for (let i = 0; i < arrField.length; i++) {
+                        if (arrField[i - 1] === 6 && arrField[i] === 6) {
+                            clearInterval(interval);
+                            calFieldingRun();
+                        }
+                    }
+                } else if(fieldingRunner > battingRunner) {
+                    clearInterval(interval);
+                    calFieldingRun();
+                }
+            }, 1000);
+        }
+        function calFieldingRun() {
+            let current_fielding = fieldingTeam;
+            console.log("Fielding "+current_fielding+" Total Score " + fieldingRunner);
+            result();
+        }
+
+        function result()
+        {
+            if(battingRunner>fieldingRunner)
+            {
+                console.log(`${battingTeam} is winner`);
+            }
+            else if(battingRunner == fieldingRunner)
+            {
+                console.log("Match Draw");
+            }
+            else{
+                console.log(`${fieldingTeam} is winner`);
+            }
+
+        }
+        //Event
+        start.addEventListener("click", startGame);
+        dice.addEventListener("click", toss_change);
+        chooseopt.addEventListener("click", tossWinner);
+
+    </script>
+</body>
+
+</html>
